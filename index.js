@@ -1,15 +1,17 @@
-const express = require('express');
+const express = require("express");
+//set dotenv config
+require("dotenv").config();
 const { CONSUMER_KEY, CONSUMER_SECRET } = process.env;
-const khan = require('khan')(CONSUMER_KEY, CONSUMER_SECRET);
+const khan = require("khan")(CONSUMER_KEY, CONSUMER_SECRET);
 
 const port = process.env.port || 3000;
 
-const authorizeUrl = 'https://www.khanacademy.org/api/auth2/authorize';
+const authorizeUrl = "https://www.khanacademy.org/api/auth2/authorize";
 
 const app = express();
 
 // First i want to retrieve the khan endpoint i would like to retrieve
-app.get('/api/:path', async (req, res, next) => {
+app.get("/api/:path", async (req, res, next) => {
   // I start my authentication process (this is step 1)
   const { oauth_token_secret, oauth_token } = await khan.requestToken(
     `http://localhost:3000/${req.params.path}`
@@ -18,7 +20,7 @@ app.get('/api/:path', async (req, res, next) => {
   res.redirect(`${authorizeUrl}?oauth_token=${oauth_token}`);
 });
 
-app.get('*', async (req, res, next) => {
+app.get("*", async (req, res, next) => {
   // After the redirect, i get back the method
   const khanMethod = req.baseUrl + req.path;
   // This is standard for the authentication process
@@ -39,11 +41,11 @@ app.get('*', async (req, res, next) => {
     const response = await authorizedApi.request(khanMethod);
     res.json(response);
   } catch (e) {
-    console.log('Error ', e);
+    console.log("Error ", e);
     res.json({ e });
   }
 });
 
 app.listen(port, () => {
-  console.log('Listening on port ', port);
+  console.log("Listening on port ", port);
 });
