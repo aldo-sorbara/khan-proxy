@@ -11,10 +11,11 @@ const authorizeUrl = "https://www.khanacademy.org/api/auth2/authorize";
 const app = express();
 
 // First i want to retrieve the khan endpoint i would like to retrieve
-app.get("/api/:path", async (req, res, next) => {
+app.get("/api/*", async (req, res, next) => {
+  const path = req.originalUrl.replace("/api/", "");
   // I start my authentication process (this is step 1)
   const { oauth_token_secret, oauth_token } = await khan.requestToken(
-    `http://localhost:3000/${req.params.path}`
+    `http://localhost:3000/${path}`
   );
   // Here is the step 2
   res.redirect(`${authorizeUrl}?oauth_token=${oauth_token}`);
